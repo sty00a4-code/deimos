@@ -1,0 +1,103 @@
+WIDTH = 128
+HEIGHT = 72
+SIZE = 10
+
+let ctx = sdl.init()
+let canvas = ctx:canvas("game of life", WIDTH * SIZE, HEIGHT * SIZE)
+let events = ctx:events()
+
+# deep copy
+fn vec.deep_copy(v) {
+    let new = []
+    for e in v:iter() {
+        if type(e) == "vector" {
+            new:push(e:deep_copy())
+        } else {
+            new:push(e)
+        }
+    }
+    return new
+}
+
+# state
+let state = []
+for y in range(HEIGHT) {
+    state:push([])
+    for x in range(WIDTH) {
+        state[y]:push(math.random():round())
+    }
+}
+let new_state = state:deep_copy()
+
+# cell
+let fn cell(x, y) {
+    if y < 0 | x < 0 {
+        return 0
+    }
+    let row = state[y]
+    if row {
+        let cell = row[x]
+        if cell {
+            return cell
+        }
+    }
+    return 0
+}
+
+# update
+let fn update() {
+    for y in range(HEIGHT) {
+        for x in range(WIDTH) {
+            let neighbors = 0
+            neighbors += cell(x - 1, y - 1)
+            neighbors += cell(x, y - 1)
+            neighbors += cell(x + 1, y - 1)
+            neighbors += cell(x - 1, y)
+            neighbors += cell(x + 1, y)
+            neighbors += cell(x - 1, y + 1)
+            neighbors += cell(x, y + 1)
+            neighbors += cell(x + 1, y + 1)
+            if cell(x, y) {
+                if neighbors < 2 {
+                    new_state[y][x] = 0
+                }
+                if neighbors > 3 {
+                    new_state[y][x] = 0
+                }
+            } else {
+                if neighbors == 3 {
+                    new_state[y][x] = 1
+                }
+            }
+        }
+    }
+    state = new_state:deep_copy()
+}
+
+# update
+let fn draw() {
+    canvas:color(15, 15, 15)
+    canvas:clear()
+    canvas:color(255, 255, 255)
+    for y in range(HEIGHT) {
+        for x in range(WIDTH) {
+            if state[y][x] {
+                canvas:rect(x * SIZE, y * SIZE, SIZE, SIZE, true)
+            }
+        }
+    }
+    canvas:present()
+}
+
+# main loop
+draw()
+while true {
+    let event = events:pull()
+    if event {
+        if event.kind == "quit" {
+            exit(0)
+        }
+    }
+    update()
+    draw()
+}
