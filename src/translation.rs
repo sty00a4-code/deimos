@@ -362,8 +362,13 @@ impl CanvasObject {
                 (float as i64).clamp(u32::MIN.into(), u32::MAX.into()).try_into()?
             }
         );
+        let fill = typed!(args: Bool?).unwrap_or_default();
 
-        self.0.draw_rect(Rect::new(x, y, width, height))?;
+        if fill {
+            self.0.fill_rect(Rect::new(x, y, width, height))?;
+        } else {
+            self.0.draw_rect(Rect::new(x, y, width, height))?;
+        }
         Ok(Value::default())
     }
 }
