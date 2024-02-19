@@ -1,0 +1,47 @@
+WIDTH = 600
+HEIGHT = 400
+
+let ctx = sdl.init()
+print(ctx)
+let canvas = ctx:canvas("test", WIDTH, HEIGHT)
+print(canvas)
+let events = ctx:events()
+print(events)
+
+let x, y = WIDTH/2, HEIGHT/2
+let speed = 0.01
+let up, down, left, right = false, false, false, false
+
+while true {
+    let event = events:pull()
+    if event {
+        if event.kind == "quit" {
+            exit(0)
+        }
+        if event.kind == "key_down" {
+            if event.keycode == "w" { up = true }
+            if event.keycode == "s" { down = true }
+            if event.keycode == "a" { left = true }
+            if event.keycode == "d" { right = true }
+        }
+        if event.kind == "key_up" {
+            if event.keycode == "w" { up = false }
+            if event.keycode == "s" { down = false }
+            if event.keycode == "a" { left = false }
+            if event.keycode == "d" { right = false }
+        }
+    }
+
+    if up { y -= speed }
+    if down { y += speed }
+    if left { x -= speed }
+    if right { x += speed }
+
+    canvas:color(15, 15, 15)
+    canvas:clear()
+
+    canvas:color(255, 15, 15)
+    canvas:rect(x, y, 10, 10)
+
+    canvas:present()
+}

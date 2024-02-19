@@ -1,0 +1,26 @@
+WIDTH = 600
+HEIGHT = 400
+
+let ctx = sdl.init()
+print(ctx)
+let canvas = ctx:canvas("test", WIDTH, HEIGHT)
+print(canvas)
+let events = ctx:events()
+print(events)
+
+while true {
+    let event = events:pull()
+    if event {
+        if event.kind == "quit" {
+            exit(0)
+        }
+    }
+
+    canvas:color(15, 15, 15)
+    canvas:clear()
+
+    canvas:color(255, 0, 0)
+    canvas:line(WIDTH/4, HEIGHT/2 + math.sin(os.time()) * (HEIGHT/2), WIDTH/2 + WIDTH/4, HEIGHT/2 + math.cos(os.time()) * (HEIGHT/2))
+
+    canvas:present()
+}

@@ -3,8 +3,9 @@ use std::{cell::RefCell, env, fs, process::exit, rc::Rc};
 use luna_rs::{
     compile_str,
     lang::{code::Closure, value::{Function, Value}},
-    luna_impl::{interpreter::{Interpreter, RunTimeError}, position::Located, std::globals},
+    luna_impl::{interpreter::{Interpreter, RunTimeError}, position::Located},
 };
+use translation::insert_module;
 
 pub mod translation;
 
@@ -47,7 +48,7 @@ pub const USAGE: &str = r#"USAGE:
 
 pub fn run(closure: Rc<RefCell<Closure>>) -> Result<Option<Value>, Located<RunTimeError>> {
     let mut interpreter = Interpreter::default();
-    interpreter.globals = Rc::new(RefCell::new(globals()));
+    insert_module(&mut interpreter.globals.borrow_mut());
     interpreter.call(&Rc::new(Function {
         closure,
         upvalues: vec![]
